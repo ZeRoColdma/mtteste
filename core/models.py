@@ -14,15 +14,11 @@ class AreaImovel(models.Model):
     cod_tema = models.CharField(max_length=254, null=True, blank=True)
     nom_tema = models.CharField(max_length=254, null=True, blank=True)
     cod_imovel = models.CharField(max_length=254, null=True, blank=True)
-    mod_fiscal = models.DecimalField(
-        max_digits=12, decimal_places=4, null=True, blank=True
-    )
-    mod_area = models.DecimalField(
-        max_digits=12, decimal_places=4, null=True, blank=True
-    )
+    mod_fiscal = models.CharField(max_length=254, null=True, blank=True)
+    num_area = models.CharField(max_length=254, null=True, blank=True)
     ind_status = models.CharField(max_length=254, null=True, blank=True)
     ind_tipo = models.CharField(max_length=254, null=True, blank=True)
-    desc_condic = models.CharField(max_length=254, null=True, blank=True)
+    des_condic = models.CharField(max_length=254, null=True, blank=True)
     municipio = models.CharField(max_length=254, null=True, blank=True)
     cod_estado = models.CharField(max_length=254, null=True, blank=True)
     dat_criaca = models.CharField(max_length=254, null=True, blank=True)

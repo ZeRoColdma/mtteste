@@ -9,7 +9,7 @@ fi
 
 # Run migrations
 echo "Making migrations..."
-python manage.py makemigrations
+# python manage.py makemigrations
 echo "Running migrations..."
 python manage.py migrate
 
