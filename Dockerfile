@@ -23,14 +23,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 COPY waitfordb.py .
-COPY entrypoint.sh .
+# Copy entrypoint to /usr/local/bin to avoid being overwritten by volume mount
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
 COPY . .
 
 
 # Fix windows line endings if any, and make executable
-RUN sed -i 's/\r$//g' /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+RUN sed -i 's/\r$//g' /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
