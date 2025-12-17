@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y \
 libpq-dev \
 gcc \
 netcat-traditional \
+gdal-bin \
+binutils \
+libproj-dev \
 && rm -rf /var/lib/apt/lists/*
 
 
@@ -19,6 +22,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 
+COPY waitfordb.py .
 COPY entrypoint.sh .
 COPY . .
 
