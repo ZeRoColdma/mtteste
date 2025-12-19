@@ -18,7 +18,7 @@ from app.core.exceptions import (
 )
 from app.fazendas.routes import router as fazendas_router
 
-# Configure logging
+# Configura logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -32,7 +32,7 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan events."""
+    """Eventos do ciclo de vida da aplicação."""
     logger.info("🚀 Starting Fazendas API...")
     logger.info(f"📊 Database: {settings.POSTGRES_DB}")
     logger.info(f"🔧 Pool size: {settings.DB_POOL_SIZE}")
@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
     logger.info("👋 Shutting down Fazendas API...")
 
 
-# Create FastAPI app
+# Cria aplicação FastAPI
 app = FastAPI(
     title=settings.API_TITLE,
     version=settings.API_VERSION,
@@ -51,7 +51,7 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# Add CORS middleware
+# Adiciona middleware CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -60,14 +60,14 @@ app.add_middleware(
     allow_headers=settings.CORS_ALLOW_HEADERS,
 )
 
-# Add compression middleware
+# Adiciona middleware de compressão
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
-# Request ID middleware
+# Middleware de ID de requisição
 @app.middleware("http")
 async def add_request_id(request: Request, call_next):
-    """Add unique request ID to each request for tracing."""
+    """Adiciona ID único a cada requisição para rastreamento."""
     request_id = str(uuid.uuid4())
     request.state.request_id = request_id
 
@@ -89,12 +89,12 @@ async def add_request_id(request: Request, call_next):
     return response
 
 
-# Exception handlers
+# Handlers de exceção
 app.add_exception_handler(DatabaseException, database_exception_handler)
 app.add_exception_handler(InvalidCoordinatesException, validation_exception_handler)
 
 
-# Health check endpoint
+# Endpoint de health check
 @app.get(
     "/health",
     tags=["Health"],
@@ -102,13 +102,13 @@ app.add_exception_handler(InvalidCoordinatesException, validation_exception_hand
     description="Verifica o status da API e conectividade com o banco de dados",
 )
 async def health_check():
-    """Health check endpoint."""
+    """Endpoint de health check."""
     from sqlalchemy import text
 
     from app.core.database import engine
 
     try:
-        # Test database connection
+        # Testa conexão com banco de dados
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
 
@@ -130,7 +130,7 @@ async def health_check():
         )
 
 
-# Root endpoint
+# Endpoint raiz
 @app.get(
     "/",
     tags=["Root"],
@@ -138,7 +138,7 @@ async def health_check():
     description="Informações básicas sobre a API",
 )
 def read_root():
-    """Root endpoint with API information."""
+    """Endpoint raiz com informações da API."""
     return {
         "message": "Bem-vindo à API de Fazendas",
         "version": settings.API_VERSION,
@@ -147,5 +147,5 @@ def read_root():
     }
 
 
-# Include routers
+# Inclui routers
 app.include_router(fazendas_router, prefix="/fazendas", tags=["Fazendas"])

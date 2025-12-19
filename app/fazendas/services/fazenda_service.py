@@ -1,4 +1,4 @@
-"""Service layer for Fazenda business logic."""
+"""Camada de serviço para lógica de negócio de Fazenda."""
 
 import logging
 from typing import Optional
@@ -11,18 +11,18 @@ logger = logging.getLogger(__name__)
 
 
 class FazendaService:
-    """Service for Fazenda business logic."""
+    """Serviço para lógica de negócio de Fazenda."""
 
     @staticmethod
     def serialize_fazenda(fazenda: AreaImovel) -> dict:
         """
-        Serialize fazenda with latitude and longitude from geometry centroid.
+        Serializa fazenda com latitude e longitude do centróide da geometria.
 
         Args:
-            fazenda: AreaImovel instance
+            fazenda: Instância de AreaImovel
 
         Returns:
-            Dictionary with farm data including centroid coordinates
+            Dicionário com dados da fazenda incluindo coordenadas do centróide
         """
         data = {
             "gid": fazenda.gid,
@@ -42,7 +42,7 @@ class FazendaService:
             "longitude": None,
         }
 
-        # Extract centroid coordinates from geometry
+        # Extrai coordenadas do centróide da geometria
         if fazenda.geom:
             try:
                 shape = to_shape(fazenda.geom)
@@ -51,7 +51,7 @@ class FazendaService:
                 data["longitude"] = centroid.x
             except Exception as e:
                 logger.warning(
-                    f"Could not extract centroid for fazenda {fazenda.gid}: {str(e)}"
+                    f"Não foi possível extrair o centróide da fazenda {fazenda.gid}: {str(e)}"
                 )
 
         return data
@@ -61,16 +61,18 @@ class FazendaService:
         total_count: int, page: int, page_size: int
     ) -> tuple[int, int]:
         """
-        Calculate pagination parameters.
+        Calcula parâmetros de paginação.
 
         Args:
-            total_count: Total number of records
-            page: Current page number (1-indexed)
-            page_size: Number of records per page
+            total_count: Número total de registros
+            page: Número da página atual (indexado em 1)
+            page_size: Número de registros por página
 
         Returns:
-            Tuple of (offset, total_pages)
+            Tupla de (offset, total_pages)
         """
         offset = (page - 1) * page_size
-        total_pages = (total_count + page_size - 1) // page_size  # Ceiling division
+        total_pages = (
+            total_count + page_size - 1
+        ) // page_size  # Divisão com arredondamento para cima
         return offset, total_pages

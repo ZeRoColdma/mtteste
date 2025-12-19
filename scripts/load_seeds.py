@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-# Add parent directory to path to allow imports from app/
+# Adiciona diretório pai ao path para permitir imports de app/
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from geoalchemy2 import WKTElement
@@ -12,29 +12,31 @@ from app.fazendas.models_sqla import AreaImovel
 
 
 def load_seeds():
-    print("Loading seed data...")
+    print("Carregando dados de seed...")
 
-    # Get the directory where this script is located
+    # Obtém o diretório onde este script está localizado
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Go up one level to project root to find seeds.json
+    # Sobe um nível para a raiz do projeto para encontrar seeds.json
     project_root = os.path.dirname(script_dir)
     seeds_file = os.path.join(project_root, "seeds.json")
 
-    # Read seeds from JSON file
+    # Lê seeds do arquivo JSON
     with open(seeds_file, "r", encoding="utf-8") as f:
         seeds = json.load(f)
 
     db = SessionLocal()
     try:
-        # Check if data already exists
+        # Verifica se os dados já existem
         existing_count = db.query(AreaImovel).count()
         if existing_count > 0:
-            print(f"Database already has {existing_count} records. Skipping seed data.")
+            print(
+                f"Banco de dados já possui {existing_count} registros. Pulando dados de seed."
+            )
             return
 
-        # Insert seed data
+        # Insere dados de seed
         for seed in seeds:
-            # Convert hex geometry to WKT format
+            # Converte geometria hex para formato WKT
             geom_hex = seed["geom"]
 
             fazenda = AreaImovel(
@@ -51,15 +53,15 @@ def load_seeds():
                 cod_estado=seed.get("cod_estado"),
                 dat_criaca=seed.get("dat_criaca"),
                 dat_atuali=seed.get("dat_atuali"),
-                geom=geom_hex,  # PostGIS can handle hex-encoded geometry directly
+                geom=geom_hex,  # PostGIS pode manipular geometria codificada em hex diretamente
             )
             db.add(fazenda)
 
         db.commit()
-        print(f"Successfully loaded {len(seeds)} seed records.")
+        print(f"Carregados com sucesso {len(seeds)} registros de seed.")
     except Exception as e:
         db.rollback()
-        print(f"Error loading seeds: {e}")
+        print(f"Erro ao carregar seeds: {e}")
         raise
     finally:
         db.close()

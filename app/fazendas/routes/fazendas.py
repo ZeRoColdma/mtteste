@@ -1,4 +1,4 @@
-"""API routes for Fazenda endpoints."""
+"""Rotas da API para endpoints de Fazenda."""
 
 import logging
 from typing import List
@@ -35,7 +35,7 @@ router = APIRouter()
     },
 )
 def get_fazenda(gid: int, db: Session = Depends(get_db)):
-    """Get farm by GID."""
+    """Busca fazenda por GID."""
     try:
         logger.info(f"Buscando fazenda com GID: {gid}")
 
@@ -73,7 +73,7 @@ def get_fazenda(gid: int, db: Session = Depends(get_db)):
     },
 )
 def busca_ponto(request: BuscaPontoRequest, db: Session = Depends(get_db)):
-    """Search farms that contain a specific point."""
+    """Busca fazendas que contêm um ponto específico."""
     try:
         logger.info(
             f"Buscando fazendas no ponto: ({request.latitude}, {request.longitude})"
@@ -105,19 +105,19 @@ def busca_ponto(request: BuscaPontoRequest, db: Session = Depends(get_db)):
     },
 )
 def busca_raio(request: BuscaRaioRequest, db: Session = Depends(get_db)):
-    """Search farms within a radius from a point with pagination."""
+    """Busca fazendas dentro de um raio a partir de um ponto com paginação."""
     try:
         logger.info(
             f"Buscando fazendas em raio de {request.raio_km}km do ponto: "
             f"({request.latitude}, {request.longitude}) - Página {request.page}, Tamanho {request.page_size}"
         )
 
-        # Calculate pagination
+        # Calcula paginação
         offset, _ = FazendaService.calculate_pagination(
             0, request.page, request.page_size
         )
 
-        # Get farms from repository
+        # Obtém fazendas do repositório
         repository = FazendaRepository(db)
         fazendas, total_count = repository.find_by_radius(
             request.latitude,
@@ -127,7 +127,7 @@ def busca_raio(request: BuscaRaioRequest, db: Session = Depends(get_db)):
             request.page_size,
         )
 
-        # Recalculate total pages with actual count
+        # Recalcula total de páginas com a contagem real
         _, total_pages = FazendaService.calculate_pagination(
             total_count, request.page, request.page_size
         )
