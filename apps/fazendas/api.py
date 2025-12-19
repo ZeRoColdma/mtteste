@@ -142,7 +142,7 @@ def busca_ponto(request: BuscaPontoRequest, db: Session = Depends(get_db)):
     "/busca-raio",
     response_model=BuscaRaioResponse,
     summary="Buscar fazendas por raio",
-    description="Retorna todas as fazendas dentro de um raio (em km) a partir de um ponto central",
+    description="Retorna todas as fazendas dentro de um raio (em km) a partir de um ponto central, com paginação",
     responses={
         200: {"description": "Busca realizada com sucesso"},
         400: {"description": "Parâmetros inválidos"},
@@ -150,33 +150,47 @@ def busca_ponto(request: BuscaPontoRequest, db: Session = Depends(get_db)):
     },
 )
 def busca_raio(request: BuscaRaioRequest, db: Session = Depends(get_db)):
-    """Search farms within a radius from a point."""
+    """Search farms within a radius from a point with pagination."""
     try:
         logger.info(
             f"Buscando fazendas em raio de {request.raio_km}km do ponto: "
-            f"({request.latitude}, {request.longitude})"
+            f"({request.latitude}, {request.longitude}) - Página {request.page}, Tamanho {request.page_size}"
         )
 
         point_wkt = f"POINT({request.longitude} {request.latitude})"
         radius_meters = request.raio_km * 1000
 
-        # Use ST_DWithin casting to Geography for meter-based distance
-        fazendas = (
-            db.query(AreaImovel)
-            .filter(
-                func.ST_DWithin(
-                    cast(AreaImovel.geom, Geography),
-                    cast(func.ST_GeomFromText(point_wkt, 4326), Geography),
-                    radius_meters,
-                )
+        # Base query
+        base_query = db.query(AreaImovel).filter(
+            func.ST_DWithin(
+                cast(AreaImovel.geom, Geography),
+                cast(func.ST_GeomFromText(point_wkt, 4326), Geography),
+                radius_meters,
             )
-            .all()
         )
 
-        logger.info(f"Encontradas {len(fazendas)} fazendas no raio especificado")
+        # Get total count
+        total_count = base_query.count()
+
+        # Calculate pagination
+        offset = (request.page - 1) * request.page_size
+        total_pages = (
+            total_count + request.page_size - 1
+        ) // request.page_size  # Ceiling division
+
+        # Get paginated results
+        fazendas = base_query.offset(offset).limit(request.page_size).all()
+
+        logger.info(
+            f"Encontradas {total_count} fazendas no total, "
+            f"retornando {len(fazendas)} na página {request.page}/{total_pages}"
+        )
 
         return BuscaRaioResponse(
-            count=len(fazendas),
+            count=total_count,
+            page=request.page,
+            page_size=request.page_size,
+            total_pages=total_pages,
             raio_km=request.raio_km,
             results=[serialize_fazenda(f) for f in fazendas],
         )

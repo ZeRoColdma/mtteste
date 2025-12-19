@@ -87,6 +87,10 @@ class BuscaRaioRequest(BaseModel):
     raio_km: float = Field(
         ..., description="Raio de busca em quilômetros", gt=0, le=1000, example=10.0
     )
+    page: int = Field(1, description="Número da página (começa em 1)", ge=1, example=1)
+    page_size: int = Field(
+        10, description="Quantidade de resultados por página", ge=1, le=100, example=10
+    )
 
     @field_validator("raio_km")
     @classmethod
@@ -97,14 +101,28 @@ class BuscaRaioRequest(BaseModel):
             raise ValueError("Raio máximo permitido é 1000 km")
         return v
 
+    @field_validator("page_size")
+    @classmethod
+    def validate_page_size(cls, v: int) -> int:
+        if v < 1:
+            raise ValueError("Tamanho da página deve ser no mínimo 1")
+        if v > 100:
+            raise ValueError("Tamanho máximo da página é 100")
+        return v
+
 
 class BuscaRaioResponse(BaseModel):
-    """Response schema for radius-based search."""
+    """Response schema for radius-based search with pagination."""
 
-    count: int = Field(..., description="Número de fazendas encontradas", example=5)
+    count: int = Field(
+        ..., description="Número total de fazendas encontradas", example=25
+    )
+    page: int = Field(..., description="Página atual", example=1)
+    page_size: int = Field(..., description="Tamanho da página", example=10)
+    total_pages: int = Field(..., description="Total de páginas", example=3)
     raio_km: float = Field(
         ..., description="Raio de busca utilizado em km", example=10.0
     )
     results: List[FazendaSchema] = Field(
-        ..., description="Lista de fazendas encontradas"
+        ..., description="Lista de fazendas encontradas nesta página"
     )
