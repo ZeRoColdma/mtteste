@@ -1,5 +1,9 @@
 import json
 import os
+import sys
+
+# Add parent directory to path to allow imports from app/
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from geoalchemy2 import WKTElement
 
@@ -12,7 +16,9 @@ def load_seeds():
 
     # Get the directory where this script is located
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    seeds_file = os.path.join(script_dir, "seeds.json")
+    # Go up one level to project root to find seeds.json
+    project_root = os.path.dirname(script_dir)
+    seeds_file = os.path.join(project_root, "seeds.json")
 
     # Read seeds from JSON file
     with open(seeds_file, "r", encoding="utf-8") as f:

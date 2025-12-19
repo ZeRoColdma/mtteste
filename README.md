@@ -46,9 +46,11 @@ A Fazendas API é uma aplicação que permite consultar informações sobre faze
 ### Endpoints Disponíveis
 
 #### 1. **GET /fazendas/{gid}**
+
 Busca uma fazenda específica por ID.
 
 **Resposta:**
+
 ```json
 {
   "gid": 1,
@@ -62,9 +64,11 @@ Busca uma fazenda específica por ID.
 ```
 
 #### 2. **POST /fazendas/busca-ponto**
+
 Busca fazendas que contêm um ponto geográfico específico.
 
 **Request:**
+
 ```json
 {
   "latitude": -21.6813,
@@ -75,9 +79,11 @@ Busca fazendas que contêm um ponto geográfico específico.
 **Resposta:** Lista de fazendas que contêm o ponto.
 
 #### 3. **POST /fazendas/busca-raio**
+
 Busca fazendas dentro de um raio (em km) a partir de um ponto, com paginação.
 
 **Request:**
+
 ```json
 {
   "latitude": -21.6813,
@@ -89,6 +95,7 @@ Busca fazendas dentro de um raio (em km) a partir de um ponto, com paginação.
 ```
 
 **Resposta:**
+
 ```json
 {
   "count": 56,
@@ -101,9 +108,11 @@ Busca fazendas dentro de um raio (em km) a partir de um ponto, com paginação.
 ```
 
 #### 4. **GET /health**
+
 Verifica o status da API e conectividade com o banco de dados.
 
 **Resposta:**
+
 ```json
 {
   "status": "healthy",
@@ -133,9 +142,10 @@ docker-compose up --build
 ```
 
 A aplicação estará disponível em:
-- **API**: http://localhost:8000
-- **Documentação Interativa (Swagger)**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+
+- **API**: <http://localhost:8000>
+- **Documentação Interativa (Swagger)**: <http://localhost:8000/docs>
+- **ReDoc**: <http://localhost:8000/redoc>
 
 ### 3. Parar a aplicação
 
@@ -153,7 +163,7 @@ docker-compose down -v
 
 ### Via Swagger UI (Recomendado)
 
-1. Acesse http://localhost:8000/docs
+1. Acesse <http://localhost:8000/docs>
 2. Explore os endpoints disponíveis
 3. Clique em "Try it out" para testar
 4. Preencha os parâmetros e clique em "Execute"
@@ -161,11 +171,13 @@ docker-compose down -v
 ### Via cURL
 
 **Buscar fazenda por ID:**
+
 ```bash
 curl http://localhost:8000/fazendas/1
 ```
 
 **Buscar por ponto:**
+
 ```bash
 curl -X POST "http://localhost:8000/fazendas/busca-ponto" \
   -H "Content-Type: application/json" \
@@ -176,6 +188,7 @@ curl -X POST "http://localhost:8000/fazendas/busca-ponto" \
 ```
 
 **Buscar por raio (com paginação):**
+
 ```bash
 curl -X POST "http://localhost:8000/fazendas/busca-raio" \
   -H "Content-Type: application/json" \
@@ -222,16 +235,26 @@ mtteste/
 │   │   └── exceptions.py      # Exceções customizadas
 │   └── fazendas/
 │       ├── __init__.py
-│       ├── api.py             # Endpoints da API
 │       ├── models_sqla.py     # Modelos SQLAlchemy
-│       └── schemas.py         # Schemas Pydantic
+│       ├── schemas.py         # Schemas Pydantic
+│       ├── routes/            # Camada de rotas (API handlers)
+│       │   ├── __init__.py
+│       │   └── fazendas.py
+│       ├── services/          # Camada de serviços (lógica de negócio)
+│       │   ├── __init__.py
+│       │   └── fazenda_service.py
+│       └── repositories/      # Camada de repositórios (acesso a dados)
+│           ├── __init__.py
+│           └── fazenda_repository.py
+├── scripts/                   # Scripts utilitários
+│   ├── __init__.py
+│   ├── create_tables.py       # Script de criação de tabelas
+│   ├── load_seeds.py          # Script de carga de dados
+│   └── waitfordb.py           # Script de espera do banco
 ├── tests/
 │   ├── __init__.py
 │   └── test_fazendas.py       # Testes da API
 ├── main.py                    # Ponto de entrada da aplicação
-├── create_tables.py           # Script de criação de tabelas
-├── load_seeds.py              # Script de carga de dados
-├── waitfordb.py               # Script de espera do banco
 ├── seeds.json                 # Dados iniciais (56 fazendas)
 ├── requirements.txt           # Dependências Python
 ├── pytest.ini                 # Configuração de testes
@@ -251,6 +274,7 @@ docker-compose run --rm app pytest tests/test_fazendas.py -v
 ### Cobertura de testes
 
 Os testes cobrem:
+
 - ✅ GET /fazendas/{gid}
 - ✅ POST /fazendas/busca-ponto
 - ✅ POST /fazendas/busca-raio

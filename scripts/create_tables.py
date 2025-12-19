@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add parent directory to path to allow imports from app/
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app.core.database import Base, engine
 from app.fazendas import models_sqla
 
@@ -7,7 +13,7 @@ print("Tables created.")
 
 # Load seed data
 try:
-    from load_seeds import load_seeds
+    from scripts.load_seeds import load_seeds
 
     load_seeds()
 except Exception as e:

@@ -16,7 +16,7 @@ from app.core.exceptions import (
     database_exception_handler,
     validation_exception_handler,
 )
-from app.fazendas.api import router as fazendas_router
+from app.fazendas.routes import router as fazendas_router
 
 # Configure logging
 logging.basicConfig(

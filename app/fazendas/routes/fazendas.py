@@ -1,66 +1,26 @@
+"""API routes for Fazenda endpoints."""
+
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from geoalchemy2 import Geography
-from geoalchemy2.shape import to_shape
-from sqlalchemy import cast, func
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.exceptions import (
-    DatabaseException,
-    FazendaNotFoundException,
-    InvalidCoordinatesException,
-)
-
-from .models_sqla import AreaImovel
-from .schemas import (
+from app.core.exceptions import DatabaseException, FazendaNotFoundException
+from app.fazendas.repositories.fazenda_repository import FazendaRepository
+from app.fazendas.schemas import (
     BuscaPontoRequest,
     BuscaRaioRequest,
     BuscaRaioResponse,
     FazendaSchema,
 )
+from app.fazendas.services.fazenda_service import FazendaService
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-
-def serialize_fazenda(fazenda: AreaImovel) -> dict:
-    """Serialize fazenda with latitude and longitude from geometry centroid."""
-    data = {
-        "gid": fazenda.gid,
-        "cod_tema": fazenda.cod_tema,
-        "nom_tema": fazenda.nom_tema,
-        "cod_imovel": fazenda.cod_imovel,
-        "mod_fiscal": fazenda.mod_fiscal,
-        "num_area": fazenda.num_area,
-        "ind_status": fazenda.ind_status,
-        "ind_tipo": fazenda.ind_tipo,
-        "des_condic": fazenda.des_condic,
-        "municipio": fazenda.municipio,
-        "cod_estado": fazenda.cod_estado,
-        "dat_criaca": fazenda.dat_criaca,
-        "dat_atuali": fazenda.dat_atuali,
-        "latitude": None,
-        "longitude": None,
-    }
-
-    # Extract centroid coordinates from geometry
-    if fazenda.geom:
-        try:
-            shape = to_shape(fazenda.geom)
-            centroid = shape.centroid
-            data["latitude"] = centroid.y
-            data["longitude"] = centroid.x
-        except Exception as e:
-            logger.warning(
-                f"Could not extract centroid for fazenda {fazenda.gid}: {str(e)}"
-            )
-
-    return data
 
 
 @router.get(
@@ -78,7 +38,9 @@ def get_fazenda(gid: int, db: Session = Depends(get_db)):
     """Get farm by GID."""
     try:
         logger.info(f"Buscando fazenda com GID: {gid}")
-        fazenda = db.query(AreaImovel).filter(AreaImovel.gid == gid).first()
+
+        repository = FazendaRepository(db)
+        fazenda = repository.get_by_id(gid)
 
         if not fazenda:
             logger.warning(f"Fazenda com GID {gid} não encontrada")
@@ -87,7 +49,7 @@ def get_fazenda(gid: int, db: Session = Depends(get_db)):
         logger.info(
             f"Fazenda {gid} encontrada: {fazenda.municipio}/{fazenda.cod_estado}"
         )
-        return serialize_fazenda(fazenda)
+        return FazendaService.serialize_fazenda(fazenda)
 
     except FazendaNotFoundException:
         raise
@@ -116,19 +78,12 @@ def busca_ponto(request: BuscaPontoRequest, db: Session = Depends(get_db)):
         logger.info(
             f"Buscando fazendas no ponto: ({request.latitude}, {request.longitude})"
         )
-        point_wkt = f"POINT({request.longitude} {request.latitude})"
 
-        # Filter using ST_Contains
-        fazendas = (
-            db.query(AreaImovel)
-            .filter(
-                func.ST_Contains(AreaImovel.geom, func.ST_GeomFromText(point_wkt, 4326))
-            )
-            .all()
-        )
+        repository = FazendaRepository(db)
+        fazendas = repository.find_by_point(request.latitude, request.longitude)
 
         logger.info(f"Encontradas {len(fazendas)} fazendas no ponto especificado")
-        return [serialize_fazenda(f) for f in fazendas]
+        return [FazendaService.serialize_fazenda(f) for f in fazendas]
 
     except SQLAlchemyError as e:
         logger.error(f"Erro de banco de dados na busca por ponto: {str(e)}")
@@ -157,29 +112,25 @@ def busca_raio(request: BuscaRaioRequest, db: Session = Depends(get_db)):
             f"({request.latitude}, {request.longitude}) - Página {request.page}, Tamanho {request.page_size}"
         )
 
-        point_wkt = f"POINT({request.longitude} {request.latitude})"
-        radius_meters = request.raio_km * 1000
-
-        # Base query
-        base_query = db.query(AreaImovel).filter(
-            func.ST_DWithin(
-                cast(AreaImovel.geom, Geography),
-                cast(func.ST_GeomFromText(point_wkt, 4326), Geography),
-                radius_meters,
-            )
+        # Calculate pagination
+        offset, _ = FazendaService.calculate_pagination(
+            0, request.page, request.page_size
         )
 
-        # Get total count
-        total_count = base_query.count()
+        # Get farms from repository
+        repository = FazendaRepository(db)
+        fazendas, total_count = repository.find_by_radius(
+            request.latitude,
+            request.longitude,
+            request.raio_km,
+            offset,
+            request.page_size,
+        )
 
-        # Calculate pagination
-        offset = (request.page - 1) * request.page_size
-        total_pages = (
-            total_count + request.page_size - 1
-        ) // request.page_size  # Ceiling division
-
-        # Get paginated results
-        fazendas = base_query.offset(offset).limit(request.page_size).all()
+        # Recalculate total pages with actual count
+        _, total_pages = FazendaService.calculate_pagination(
+            total_count, request.page, request.page_size
+        )
 
         logger.info(
             f"Encontradas {total_count} fazendas no total, "
@@ -192,7 +143,7 @@ def busca_raio(request: BuscaRaioRequest, db: Session = Depends(get_db)):
             page_size=request.page_size,
             total_pages=total_pages,
             raio_km=request.raio_km,
-            results=[serialize_fazenda(f) for f in fazendas],
+            results=[FazendaService.serialize_fazenda(f) for f in fazendas],
         )
 
     except SQLAlchemyError as e:

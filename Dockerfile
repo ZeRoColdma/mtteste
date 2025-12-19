@@ -23,7 +23,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 
-COPY waitfordb.py .
+COPY /scripts/waitfordb.py .
 # Copy entrypoint to /usr/local/bin to avoid being overwritten by volume mount
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
