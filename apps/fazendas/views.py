@@ -65,7 +65,6 @@ def busca_raio(request):
     Recebe coordenadas + raio em quilômetros e retorna todas as fazendas dentro desse raio.
     Body: { "latitude": -23.5505, "longitude": -46.6333, "raio_km": 50 }
     """
-    print("Oi")
     latitude = request.data.get("latitude")
     longitude = request.data.get("longitude")
     raio_km = request.data.get("raio_km")
