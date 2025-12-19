@@ -3,6 +3,7 @@ uvicorn[standard]
 httpx
 sqlalchemy
 geoalchemy2
+shapely
 psycopg2-binary==2.9.9
 python-dotenv
 alembic

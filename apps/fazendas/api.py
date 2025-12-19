@@ -3,6 +3,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from geoalchemy2 import Geography
+from geoalchemy2.shape import to_shape
 from sqlalchemy import cast, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -25,6 +26,41 @@ from .schemas import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def serialize_fazenda(fazenda: AreaImovel) -> dict:
+    """Serialize fazenda with latitude and longitude from geometry centroid."""
+    data = {
+        "gid": fazenda.gid,
+        "cod_tema": fazenda.cod_tema,
+        "nom_tema": fazenda.nom_tema,
+        "cod_imovel": fazenda.cod_imovel,
+        "mod_fiscal": fazenda.mod_fiscal,
+        "num_area": fazenda.num_area,
+        "ind_status": fazenda.ind_status,
+        "ind_tipo": fazenda.ind_tipo,
+        "des_condic": fazenda.des_condic,
+        "municipio": fazenda.municipio,
+        "cod_estado": fazenda.cod_estado,
+        "dat_criaca": fazenda.dat_criaca,
+        "dat_atuali": fazenda.dat_atuali,
+        "latitude": None,
+        "longitude": None,
+    }
+
+    # Extract centroid coordinates from geometry
+    if fazenda.geom:
+        try:
+            shape = to_shape(fazenda.geom)
+            centroid = shape.centroid
+            data["latitude"] = centroid.y
+            data["longitude"] = centroid.x
+        except Exception as e:
+            logger.warning(
+                f"Could not extract centroid for fazenda {fazenda.gid}: {str(e)}"
+            )
+
+    return data
 
 
 @router.get(
@@ -51,7 +87,7 @@ def get_fazenda(gid: int, db: Session = Depends(get_db)):
         logger.info(
             f"Fazenda {gid} encontrada: {fazenda.municipio}/{fazenda.cod_estado}"
         )
-        return fazenda
+        return serialize_fazenda(fazenda)
 
     except FazendaNotFoundException:
         raise
@@ -92,7 +128,7 @@ def busca_ponto(request: BuscaPontoRequest, db: Session = Depends(get_db)):
         )
 
         logger.info(f"Encontradas {len(fazendas)} fazendas no ponto especificado")
-        return fazendas
+        return [serialize_fazenda(f) for f in fazendas]
 
     except SQLAlchemyError as e:
         logger.error(f"Erro de banco de dados na busca por ponto: {str(e)}")
@@ -140,7 +176,9 @@ def busca_raio(request: BuscaRaioRequest, db: Session = Depends(get_db)):
         logger.info(f"Encontradas {len(fazendas)} fazendas no raio especificado")
 
         return BuscaRaioResponse(
-            count=len(fazendas), raio_km=request.raio_km, results=fazendas
+            count=len(fazendas),
+            raio_km=request.raio_km,
+            results=[serialize_fazenda(f) for f in fazendas],
         )
 
     except SQLAlchemyError as e:

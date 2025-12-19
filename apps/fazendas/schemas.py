@@ -23,6 +23,12 @@ class FazendaSchema(BaseModel):
     )
     dat_criaca: Optional[str] = Field(None, description="Data de criação")
     dat_atuali: Optional[str] = Field(None, description="Data de atualização")
+    latitude: Optional[float] = Field(
+        None, description="Latitude do centróide da fazenda", example=-21.6813
+    )
+    longitude: Optional[float] = Field(
+        None, description="Longitude do centróide da fazenda", example=-50.7479
+    )
 
     class Config:
         from_attributes = True
