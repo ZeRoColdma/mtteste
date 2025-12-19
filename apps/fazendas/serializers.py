@@ -1,7 +1,8 @@
 import json
 
-from core.models import AreaImovel
 from rest_framework import serializers
+
+from .models import AreaImovel
 
 
 class GeoJSONField(serializers.Field):

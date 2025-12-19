@@ -14,7 +14,7 @@ def reverse_seed_area_imovel(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0002_areaimovel"),
+        ("fazendas", "0002_areaimovel"),
     ]
 
     operations = [

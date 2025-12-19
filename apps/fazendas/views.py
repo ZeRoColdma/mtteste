@@ -1,4 +1,3 @@
-from core.models import AreaImovel
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.gis.db.models.functions import Cast
 from django.contrib.gis.geos import Point
@@ -7,6 +6,7 @@ from rest_framework import pagination, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from .models import AreaImovel
 from .serializers import FazendaSerializer
 
 

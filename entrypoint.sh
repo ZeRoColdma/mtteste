@@ -9,7 +9,7 @@ fi
 
 # Run migrations
 echo "Making migrations..."
-python manage.py makemigrations core
+python manage.py makemigrations core fazendas
 echo "Running migrations..."
 python manage.py migrate
 

@@ -2,7 +2,7 @@ from django.db import migrations, models
 
 
 def seed_16_imoveis(apps, schema_editor):
-    AreaImovel = apps.get_model("core", "AreaImovel")
+    AreaImovel = apps.get_model("fazendas", "AreaImovel")
 
     seeds = [
         {
@@ -908,14 +908,14 @@ def seed_16_imoveis(apps, schema_editor):
 
 
 def reverse_seed_16_imoveis(apps, schema_editor):
-    AreaImovel = apps.get_model("core", "AreaImovel")
+    AreaImovel = apps.get_model("fazendas", "AreaImovel")
     AreaImovel.objects.all().delete()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("core", "0003_auto_20251217_1455"),
+        ("fazendas", "0003_auto_20251217_1455"),
     ]
 
     operations = [

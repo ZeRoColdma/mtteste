@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0004_squashed_schema_and_data'),
+        ("fazendas", "0004_squashed_schema_and_data"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='areaimovel',
-            name='mod_fiscal',
+            model_name="areaimovel",
+            name="mod_fiscal",
             field=models.CharField(blank=True, max_length=254, null=True),
         ),
     ]
