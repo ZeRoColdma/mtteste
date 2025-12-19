@@ -8,9 +8,13 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
+import sys
+from pathlib import Path
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mtteste.settings')
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mtteste.settings")
 
 application = get_wsgi_application()
