@@ -122,7 +122,7 @@ Verifica o status da API e conectividade com o banco de dados.
 ### 1. Clone o repositório
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ZeRoColdma/mtteste
 cd mtteste
 ```
 
@@ -301,23 +301,3 @@ CORS_ORIGINS=["*"]
 ## 📊 Dados Iniciais
 
 A aplicação vem com 56 fazendas pré-cadastradas de Adamantina/SP, carregadas automaticamente na primeira inicialização a partir do arquivo `seeds.json`.
-
-## 🤝 Contribuindo
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT.
-
-## 👥 Autores
-
-- Desenvolvido como parte do desafio Django/FastAPI
-
-## 📞 Suporte
-
-Para suporte, abra uma issue no repositório do projeto.
