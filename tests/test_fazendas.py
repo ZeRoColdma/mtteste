@@ -4,11 +4,13 @@ from geoalchemy2 import WKTElement
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.core.database import DATABASE_URL, get_db
+from app.core.config import get_settings
+from app.core.database import get_db
 from app.fazendas.models_sqla import AreaImovel
 from main import app
 
-engine = create_engine(DATABASE_URL)
+settings = get_settings()
+engine = create_engine(settings.database_url)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

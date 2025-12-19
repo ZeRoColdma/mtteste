@@ -214,20 +214,27 @@ print(f"Página {data['page']} de {data['total_pages']}")
 
 ```
 mtteste/
-├── apps/
+├── app/
 │   ├── core/
+│   │   ├── __init__.py
 │   │   ├── config.py          # Configurações centralizadas
 │   │   ├── database.py        # Conexão com banco de dados
 │   │   └── exceptions.py      # Exceções customizadas
 │   └── fazendas/
+│       ├── __init__.py
 │       ├── api.py             # Endpoints da API
 │       ├── models_sqla.py     # Modelos SQLAlchemy
 │       └── schemas.py         # Schemas Pydantic
+├── tests/
+│   ├── __init__.py
+│   └── test_fazendas.py       # Testes da API
 ├── main.py                    # Ponto de entrada da aplicação
 ├── create_tables.py           # Script de criação de tabelas
 ├── load_seeds.py              # Script de carga de dados
+├── waitfordb.py               # Script de espera do banco
 ├── seeds.json                 # Dados iniciais (56 fazendas)
 ├── requirements.txt           # Dependências Python
+├── pytest.ini                 # Configuração de testes
 ├── Dockerfile                 # Configuração Docker
 ├── docker-compose.yml         # Orquestração de containers
 └── README.md                  # Este arquivo
@@ -238,7 +245,7 @@ mtteste/
 ### Executar testes
 
 ```bash
-docker-compose run --rm app pytest apps/fazendas/tests_fastapi.py -v
+docker-compose run --rm app pytest tests/test_fazendas.py -v
 ```
 
 ### Cobertura de testes
