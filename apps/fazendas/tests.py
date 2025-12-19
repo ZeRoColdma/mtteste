@@ -1,5 +1,5 @@
 from core.models import AreaImovel
-from django.contrib.gis.geos import Point, Polygon
+from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,8 +8,9 @@ from rest_framework.test import APITestCase
 class FazendaTests(APITestCase):
     def setUp(self):
         # Create a sample farm (square around 0,0)
+        poly = Polygon.from_bbox((-1, -1, 1, 1))
         self.fazenda = AreaImovel.objects.create(
-            gid=1, cod_imovel="CODE123", geom=Polygon.from_bbox((-1, -1, 1, 1))
+            gid=1, cod_imovel="CODE123", geom=MultiPolygon(poly)
         )
 
     def test_get_fazenda_detail(self):
@@ -52,7 +53,7 @@ class FazendaTests(APITestCase):
         # Point (1.1, 0) is 0.1 deg away from edge (approx 11km)
         data = {"latitude": 0, "longitude": 1.1, "raio_km": 20}
         response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.assertGreaterEqual(response.data["count"], 1)
 
     def test_busca_raio_invalid_params(self):

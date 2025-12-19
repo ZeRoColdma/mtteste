@@ -1,4 +1,6 @@
 from core.models import AreaImovel
+from django.contrib.gis.db.models import MultiPolygonField
+from django.contrib.gis.db.models.functions import Cast
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from rest_framework import status
@@ -63,6 +65,7 @@ def busca_raio(request):
     Recebe coordenadas + raio em quilômetros e retorna todas as fazendas dentro desse raio.
     Body: { "latitude": -23.5505, "longitude": -46.6333, "raio_km": 50 }
     """
+    print("Oi")
     latitude = request.data.get("latitude")
     longitude = request.data.get("longitude")
     raio_km = request.data.get("raio_km")
@@ -78,9 +81,10 @@ def busca_raio(request):
         ponto = Point(float(longitude), float(latitude), srid=4326)
 
         # Find all farms within the specified radius (in kilometers)
-        fazendas = AreaImovel.objects.filter(
-            geom__dwithin=(ponto, D(km=float(raio_km)))
-        )
+        # Cast to Geography to use meters/km distance relative to earth surface
+        fazendas = AreaImovel.objects.annotate(
+            geog=Cast("geom", MultiPolygonField(geography=True))
+        ).filter(geog__dwithin=(ponto, D(km=float(raio_km))))
 
         serializer = FazendaSerializer(fazendas, many=True)
         return Response(
