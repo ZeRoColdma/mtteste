@@ -29,12 +29,6 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 COPY . .
 
-# Run tests during build
-ENV PYTHONPATH=/app/apps
-RUN export DB_ENGINE=django.contrib.gis.db.backends.spatialite && \
-    export POSTGRES_DB=:memory: && \
-    pytest
-
 
 # Fix windows line endings if any, and make executable
 RUN sed -i 's/\r$//g' /usr/local/bin/entrypoint.sh
@@ -42,4 +36,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

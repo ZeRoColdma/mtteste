@@ -7,17 +7,9 @@ then
     python waitfordb.py
 fi
 
-# Run migrations
-echo "Making migrations..."
-python manage.py makemigrations core fazendas
-echo "Running migrations..."
-python manage.py migrate
 
-# Create superuser if variables are defined
-if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ]; then
-    echo "Creating superuser..."
-    python manage.py createsuperuser --noinput || echo "Superuser creation failed or already exists (ignoring)"
-fi
+echo "Creating tables..."
+python create_tables.py
 
 echo "Starting server..."
 exec "$@"

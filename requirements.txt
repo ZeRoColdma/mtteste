@@ -1,7 +1,10 @@
-django>=5.0
-djangorestframework
-django-filter
+fastapi
+uvicorn[standard]
+httpx
+sqlalchemy
+geoalchemy2
 psycopg2-binary==2.9.9
 python-dotenv
+alembic
+pydantic-settings
 pytest
-pytest-django
