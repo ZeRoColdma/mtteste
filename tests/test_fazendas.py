@@ -5,13 +5,22 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.config import get_settings
-from app.core.database import get_db
+from app.core.database import Base, get_db
 from app.fazendas.models_sqla import AreaImovel
 from main import app
 
 settings = get_settings()
 engine = create_engine(settings.database_url)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_database():
+    """Create tables before running tests."""
+    Base.metadata.create_all(bind=engine)
+    yield
+    # Optionally drop tables after tests
+    # Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture(scope="function")
