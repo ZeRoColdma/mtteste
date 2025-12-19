@@ -83,7 +83,7 @@ WSGI_APPLICATION = "mtteste.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "ENGINE": os.environ.get("DB_ENGINE", "django.contrib.gis.db.backends.postgis"),
         "NAME": os.environ.get("POSTGRES_DB", "fazendasdb"),
         "USER": os.environ.get("POSTGRES_USER", "postgres"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
@@ -91,6 +91,10 @@ DATABASES = {
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     }
 }
+
+if os.environ.get("DB_ENGINE") == "django.contrib.gis.db.backends.spatialite":
+    DATABASES["default"]["NAME"] = os.path.join(BASE_DIR, "db.sqlite3")
+    SPATIALITE_LIBRARY_PATH = "mod_spatialite.so"
 
 
 # Password validation

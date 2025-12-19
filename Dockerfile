@@ -15,6 +15,7 @@ netcat-traditional \
 gdal-bin \
 binutils \
 libproj-dev \
+libsqlite3-mod-spatialite \
 && rm -rf /var/lib/apt/lists/*
 
 
@@ -27,6 +28,12 @@ COPY waitfordb.py .
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 COPY . .
+
+# Run tests during build
+ENV PYTHONPATH=/app/apps
+RUN export DB_ENGINE=django.contrib.gis.db.backends.spatialite && \
+    export POSTGRES_DB=:memory: && \
+    pytest
 
 
 # Fix windows line endings if any, and make executable
