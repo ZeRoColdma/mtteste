@@ -8,8 +8,8 @@ from sqlalchemy import cast, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from apps.core.database import get_db
-from apps.core.exceptions import (
+from app.core.database import get_db
+from app.core.exceptions import (
     DatabaseException,
     FazendaNotFoundException,
     InvalidCoordinatesException,

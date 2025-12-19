@@ -1,7 +1,7 @@
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Index, Integer, String
 
-from apps.core.database import Base
+from app.core.database import Base
 
 
 class AreaImovel(Base):

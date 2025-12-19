@@ -4,8 +4,8 @@ from geoalchemy2 import WKTElement
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from apps.core.database import DATABASE_URL, get_db
-from apps.fazendas.models_sqla import AreaImovel
+from app.core.database import DATABASE_URL, get_db
+from app.fazendas.models_sqla import AreaImovel
 from main import app
 
 engine = create_engine(DATABASE_URL)

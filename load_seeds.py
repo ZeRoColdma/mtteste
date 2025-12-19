@@ -3,8 +3,8 @@ import os
 
 from geoalchemy2 import WKTElement
 
-from apps.core.database import SessionLocal
-from apps.fazendas.models_sqla import AreaImovel
+from app.core.database import SessionLocal
+from app.fazendas.models_sqla import AreaImovel
 
 
 def load_seeds():

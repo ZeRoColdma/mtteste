@@ -2,7 +2,7 @@ from sqlalchemy import Index, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from apps.core.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 

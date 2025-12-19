@@ -9,14 +9,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-from apps.core.config import get_settings
-from apps.core.exceptions import (
+from app.core.config import get_settings
+from app.core.exceptions import (
     DatabaseException,
     InvalidCoordinatesException,
     database_exception_handler,
     validation_exception_handler,
 )
-from apps.fazendas.api import router as fazendas_router
+from app.fazendas.api import router as fazendas_router
 
 # Configure logging
 logging.basicConfig(
@@ -105,7 +105,7 @@ async def health_check():
     """Health check endpoint."""
     from sqlalchemy import text
 
-    from apps.core.database import engine
+    from app.core.database import engine
 
     try:
         # Test database connection

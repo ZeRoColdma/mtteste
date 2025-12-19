@@ -1,5 +1,5 @@
-from apps.core.database import Base, engine
-from apps.fazendas import models_sqla
+from app.core.database import Base, engine
+from app.fazendas import models_sqla
 
 print("Creating database tables...")
 Base.metadata.create_all(bind=engine)
