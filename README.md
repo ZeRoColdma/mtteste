@@ -141,6 +141,14 @@ cd mtteste
 docker-compose up --build
 ```
 
+### 2.1 Inicie a aplicação com Docker Compose
+
+```bash
+docker-compose build
+
+docker-compose up
+```
+
 A aplicação estará disponível em:
 
 - **API**: <http://localhost:8000>
