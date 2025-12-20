@@ -167,6 +167,12 @@ docker-compose down
 docker-compose down -v
 ```
 
+### 5. Parar e remover volumes (limpar banco de dados)
+
+```bash
+docker compose down --rmi all --volumes --remove-orphans
+```
+
 ## 📖 Uso da API
 
 ### Via Swagger UI (Recomendado)
