@@ -1,0 +1,113 @@
+{
+  "info": {
+    "_postman_id": "c62f275e-9f37-4d7a-8b1c-99f5b08e24c5",
+    "name": "Fazendas API",
+    "description": "Collection de testes para a API de Fazendas (FastAPI + PostGIS)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Busca Fazenda por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/fazendas/:gid",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "fazendas",
+            ":gid"
+          ],
+          "variable": [
+            {
+              "key": "gid",
+              "value": "1",
+              "description": "ID da fazenda"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Busca por Ponto",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"latitude\": -21.7092,\n    \"longitude\": -51.0729\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/fazendas/busca-ponto",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "fazendas",
+            "busca-ponto"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Busca por Raio",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"latitude\": -21.7092,\n    \"longitude\": -51.0729,\n    \"raio_km\": 10.0,\n    \"page\": 1,\n    \"page_size\": 10\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/fazendas/busca-raio",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "fazendas",
+            "busca-raio"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}
